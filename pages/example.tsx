@@ -1,4 +1,4 @@
-function ExampleFetch({ data }) {
+function ExampleFetch({ data }: any) {
   return <div>{JSON.stringify(data, null, 2)}</div>;
 }
 
