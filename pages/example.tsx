@@ -5,7 +5,6 @@ function ExampleFetch({ data }: any) {
 // This gets called on every request
 export async function getServerSideProps() {
   // Fetch data from external API
-  console.log();
   const res = await fetch(`${process.env.SERVER}api/hello`);
   const data = await res.json();
 
