@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ records }: any) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -12,7 +12,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}></main>
+      <main className={styles.main}>
+        {records?.map((row: any) => (
+          <div key={row.id}>
+            <p>{row.fields.Photos[0].url}</p>
+            <Image layout="fill" alt="zainus" src={row.fields.Photos[0].url} />
+          </div>
+        ))}
+      </main>
 
       <footer className={styles.footer}>
         <a
@@ -29,5 +36,26 @@ const Home: NextPage = () => {
     </div>
   );
 };
+
+export async function getStaticProps() {
+  // Call an external API endpoint to get posts.
+  // You can use any data fetching library
+  const response = await fetch(`${process.env.AIRTABLE_API_URL}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `${process.env.AIRTABLE_API_KEY}`,
+    },
+  });
+  const { records } = await response.json();
+  console.log(records);
+
+  // By returning { props: { posts } }, the Blog component
+  // will receive `posts` as a prop at build time
+  return {
+    props: {
+      records,
+    },
+  };
+}
 
 export default Home;
