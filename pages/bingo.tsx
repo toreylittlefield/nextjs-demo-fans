@@ -77,12 +77,12 @@ const Bingo = ({ clips }: PropTypes) => {
         return (
           <div key={clip.id}>
             <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
-            <iframe
+            {/* <iframe
               src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=www.nextjs-demo-fans.vercel.app/bingo`}
               height="480"
               width="272"
               allowFullScreen={true}
-            />
+            /> */}
             <div id={clip.id}></div>
             <h3>{clip.title}</h3>
           </div>
