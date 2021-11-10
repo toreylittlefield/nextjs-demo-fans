@@ -40,6 +40,7 @@ declare global {
 
 const Bingo = ({ clips }: PropTypes) => {
   useEffect(() => {
+    if (clips.length === 0) return;
     const createTwitchPlayer = (clip: Clip) => {
       const options = {
         width: 480,
