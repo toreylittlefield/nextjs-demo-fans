@@ -115,6 +115,7 @@ export async function getStaticProps() {
       'Client-Id': process.env.TWITCH_CLIENT_ID || '',
     },
   });
+  console.log(getData);
   const clips = await getData.json();
   console.log(clips);
 
