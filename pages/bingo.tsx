@@ -112,7 +112,7 @@ export async function getStaticProps() {
   const getData = await fetch(`https://api.twitch.tv/helix/${param}`, {
     headers: {
       Authorization: `Bearer ${getToken.access_token}`,
-      'Client-Id': process.env.TWITCH_CLIENT_ID,
+      'Client-Id': process.env.TWITCH_CLIENT_ID || '',
     },
   });
   const clips = await getData.json();
