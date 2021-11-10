@@ -72,7 +72,7 @@ const Bingo = ({ clips }: PropTypes) => {
         loop
         autoPlay
       /> */}
-      {clips.map((clip) => {
+      {clips?.map((clip) => {
         return (
           <div key={clip.id}>
             <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
