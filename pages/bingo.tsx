@@ -1,7 +1,7 @@
 import Script from 'next/script';
 import Image from 'next/image';
-import { IframeHTMLAttributes, useEffect } from 'react';
 import { getAuth } from './api/twitch';
+import useLiveTwitchPlayer from '../Hooks/useLiveTwitchPlayer';
 
 // interface PropTypes {
 //   data: {
@@ -46,29 +46,7 @@ declare module 'react' {
 }
 
 const Bingo = ({ clips }: PropTypes) => {
-  useEffect(() => {
-    if (clips.length === 0) return;
-    const createTwitchPlayer = (clip: Clip) => {
-      const options = {
-        width: 480,
-        height: 272,
-        channel: 'roarcoders',
-        // video: clip.id,
-        //   collection: '',
-        // only needed if your site is also embedded on embed.example.com and othersite.example.com
-        // parent: ["embed.example.com", "othersite.example.com"]
-      };
-      if (window.Twitch) {
-        const player = new window.Twitch.Player(clip.id, options);
-        player.setVolume(0.5);
-        return player;
-      }
-    };
-    createTwitchPlayer(clips[0]);
-    return () => {
-      // cleanup
-    };
-  }, [clips]);
+  const [twitchLivePlayerId] = useLiveTwitchPlayer('live-twitch-player');
 
   return (
     <div>
@@ -81,23 +59,25 @@ const Bingo = ({ clips }: PropTypes) => {
         loop
         autoPlay
       /> */}
-      {clips?.map((clip) => {
-        return (
-          <div key={clip.id}>
-            <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
-            <p>{clip.embed_url}</p>
-            <iframe
-              src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=localhost&parent=nextjs-demo-fans.vercel.app`}
-              parent="localhost,nextjs-demo-fans.vercel.app"
-              height="100%"
-              width="50%"
-              allowFullScreen={true}
-            />
-            <div id={clip.id}></div>
-            <h3>{clip.title}</h3>
-          </div>
-        );
-      })}
+      <div id={twitchLivePlayerId} />
+      {false &&
+        clips?.map((clip) => {
+          return (
+            <div key={clip.id}>
+              <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
+              <p>{clip.embed_url}</p>
+              <iframe
+                src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=localhost&parent=nextjs-demo-fans.vercel.app`}
+                parent="localhost,nextjs-demo-fans.vercel.app"
+                height="100%"
+                width="50%"
+                allowFullScreen={true}
+              />
+              <div id={clip.id}></div>
+              <h3>{clip.title}</h3>
+            </div>
+          );
+        })}
       <div>{JSON.stringify(clips, null, 2)}</div>
     </div>
   );
