@@ -7,6 +7,11 @@ type Data = {
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const data = await getAuth();
+  res.status(200).json(data);
+};
+
+export async function getAuth() {
   try {
     const response = await fetch(
       `https://id.twitch.tv/oauth2/token?client_id=${process.env.TWITCH_CLIENT_ID}&client_secret=${process.env.TWITCH_CLIENT_SECRET}&grant_type=client_credentials`,
@@ -15,7 +20,8 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       }
     );
     const data = await response.json();
-    console.log(data);
-    res.status(200).json(data);
-  } catch (error) {}
-};
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
