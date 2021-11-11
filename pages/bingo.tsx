@@ -43,7 +43,7 @@ const Bingo = ({ clips = [] }: PropTypes) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(33%,480px));',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(33%,480px))',
           placeContent: 'center',
         }}
       >
