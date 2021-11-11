@@ -1,11 +1,9 @@
 import Script from 'next/script';
-import Image from 'next/image';
 import { getAuth } from './api/twitch/auth';
 import useLiveTwitchPlayer from '../Hooks/useLiveTwitchPlayer';
-import TwitchIframeClip from '../Components/TwitchIframeClip';
-import { rgbDataURL } from '../utils';
+import TwitchClipContainer from '../Components/TwitchClipContainer';
 
-type Clip = {
+export type Clip = {
   id: string;
   url: string;
   embed_url: string;
@@ -42,25 +40,17 @@ const Bingo = ({ clips = [] }: PropTypes) => {
 
       <Script src="https://js.pusher.com/5.0/pusher.min.js" />
       <div id={twitchLivePlayerId} />
-      {clips?.map((clip) => {
-        return (
-          <div key={clip.id}>
-            <Image
-              src={clip.thumbnail_url}
-              alt={clip.title}
-              width="480"
-              height="272"
-              placeholder="blur"
-              blurDataURL={rgbDataURL(2, 129, 210)}
-              layout="responsive"
-            />
-            <p>{clip.embed_url}</p>
-            <TwitchIframeClip id={clip.id} />
-            <div id={clip.id}></div>
-            <h3>{clip.title}</h3>
-          </div>
-        );
-      })}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(33%,480px))',
+          placeContent: 'center',
+        }}
+      >
+        {clips?.map((clip) => (
+          <TwitchClipContainer key={clip.id} clip={clip} />
+        ))}
+      </div>
       <div>{JSON.stringify(clips, null, 2)}</div>
     </div>
   );
