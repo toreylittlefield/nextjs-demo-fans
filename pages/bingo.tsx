@@ -1,6 +1,6 @@
 import Script from 'next/script';
 import Image from 'next/image';
-import { IframeHTMLAttributes, DetailedHTMLProps, useEffect } from 'react';
+import { IframeHTMLAttributes, useEffect } from 'react';
 import { getAuth } from './api/twitch';
 
 // interface PropTypes {
@@ -39,6 +39,12 @@ declare global {
   }
 }
 
+declare module 'react' {
+  interface IframeHTMLAttributes<T> extends HTMLAttributes<T> {
+    parent?: string;
+  }
+}
+
 const Bingo = ({ clips }: PropTypes) => {
   useEffect(() => {
     if (clips.length === 0) return;
@@ -63,6 +69,7 @@ const Bingo = ({ clips }: PropTypes) => {
       // cleanup
     };
   }, [clips]);
+
   return (
     <div>
       <Script src="https://player.twitch.tv/js/embed/v1.js" strategy="beforeInteractive" />
@@ -80,8 +87,8 @@ const Bingo = ({ clips }: PropTypes) => {
             <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
             <p>{clip.embed_url}</p>
             <iframe
-              src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=localhost`}
-              parent="localhost"
+              src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=localhost&parent=nextjs-demo-fans.vercel.app`}
+              parent="localhost,nextjs-demo-fans.vercel.app"
               height="100%"
               width="50%"
               allowFullScreen={true}
