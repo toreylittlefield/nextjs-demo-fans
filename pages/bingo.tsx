@@ -1,6 +1,7 @@
 import Script from 'next/script';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { IframeHTMLAttributes, DetailedHTMLProps, useEffect } from 'react';
+import { getAuth } from './api/twitch';
 
 // interface PropTypes {
 //   data: {
@@ -77,12 +78,14 @@ const Bingo = ({ clips }: PropTypes) => {
         return (
           <div key={clip.id}>
             <Image src={clip.thumbnail_url} alt={clip.title} width="480" height="272" />
-            {/* <iframe
-              src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=www.nextjs-demo-fans.vercel.app/bingo`}
-              height="480"
-              width="272"
+            <p>{clip.embed_url}</p>
+            <iframe
+              src={`https://clips.twitch.tv/embed?clip=${clip.id}&parent=localhost`}
+              parent="localhost"
+              height="100%"
+              width="50%"
               allowFullScreen={true}
-            /> */}
+            />
             <div id={clip.id}></div>
             <h3>{clip.title}</h3>
           </div>
@@ -96,37 +99,45 @@ const Bingo = ({ clips }: PropTypes) => {
 export async function getStaticProps() {
   // Call an external API endpoint to get posts.
   // You can use any data fetching library
+  try {
+    // console.log(`${process.env.SERVER}/api/twitch`);
+    // const response = await fetch(`${process.env.SERVER}/api/twitch`, {
+    const getToken = await getAuth();
+    //     , {
+    //   method: 'GET',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    // });
+    // const getToken = await response.json();
 
-  const response = await fetch(`${process.env.SERVER}/api/twitch`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const getToken = await response.json();
+    //   const param = `search/channels?query=roarcoders`;
+    const param = `clips?broadcaster_id=558724655`;
 
-  //   const param = `search/channels?query=roarcoders`;
-  const param = `clips?broadcaster_id=558724655`;
+    const getData = await fetch(`https://api.twitch.tv/helix/${param}`, {
+      headers: {
+        Authorization: `Bearer ${getToken.access_token}`,
+        'Client-Id': process.env.TWITCH_CLIENT_ID || '',
+      },
+    });
+    const clips = await getData.json();
 
-  //clips?id=689418411
-
-  const getData = await fetch(`https://api.twitch.tv/helix/${param}`, {
-    headers: {
-      Authorization: `Bearer ${getToken.access_token}`,
-      'Client-Id': process.env.TWITCH_CLIENT_ID || '',
-    },
-  });
-  console.log(getData);
-  const clips = await getData.json();
-  console.log(clips);
-
-  // By returning { props: { posts } }, the Blog component
-  // will receive `posts` as a prop at build time
-  return {
-    props: {
-      clips: clips.data,
-    },
-  };
+    // By returning { props: { posts } }, the Blog component
+    // will receive `posts` as a prop at build time
+    return {
+      props: {
+        clips: clips.data,
+      },
+    };
+  } catch (error) {
+    console.log(error);
+    const clips = { data: [] };
+    return {
+      props: {
+        clips: clips.data,
+      },
+    };
+  }
 }
 
 export default Bingo;
