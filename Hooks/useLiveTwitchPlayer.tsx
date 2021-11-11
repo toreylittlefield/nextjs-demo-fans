@@ -24,7 +24,7 @@ const useLiveTwitchPlayer = (twitchLivePlayerId: string = 'liveplayerid') => {
         document.getElementById(twitchLivePlayerId)?.remove();
       }
     };
-  }, []);
+  }, [twitchLivePlayerId]);
 
   return [twitchLivePlayerId];
 };
