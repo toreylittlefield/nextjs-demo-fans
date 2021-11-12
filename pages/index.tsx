@@ -3,8 +3,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import { AirtableApiTypes } from './404';
+import { InferGetStaticPropsType } from 'next';
 
-const Home: NextPage = ({ records }: any) => {
+const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({ records }) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -14,11 +15,14 @@ const Home: NextPage = ({ records }: any) => {
       </Head>
 
       <main className={styles.main}>
-        {records?.map((row: any) => (
-          <div key={row.id}>
-            <Image layout="fill" alt="zainus" src={row.fields.Photos[0].url} />
-          </div>
-        ))}
+        {records?.map((record) => {
+          if (record.fields.Photos)
+            return (
+              <div key={record.id}>
+                <Image layout="fill" alt="zainus" src={record.fields.Photos[0].url} />
+              </div>
+            );
+        })}
       </main>
 
       <footer className={styles.footer}>
@@ -44,11 +48,11 @@ export async function getStaticProps() {
       Authorization: `${process.env.AIRTABLE_API_KEY}`,
     },
   });
-  const res: AirtableApiTypes = await response.json();
+  const { records }: AirtableApiTypes = await response.json();
 
   return {
     props: {
-      records: res.records,
+      records,
     },
   };
 }

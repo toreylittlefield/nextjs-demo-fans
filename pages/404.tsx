@@ -13,6 +13,7 @@ interface Record {
 interface Fields {
   id?: string;
   Attachments?: Attachment[];
+  Photos?: Attachment[];
 }
 
 interface Attachment {
