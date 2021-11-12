@@ -2,6 +2,7 @@ import Script from 'next/script';
 import { getAuth } from './api/twitch/auth';
 import useLiveTwitchPlayer from '../Hooks/useLiveTwitchPlayer';
 import TwitchClipContainer from '../Components/TwitchClipContainer';
+import { GetStaticProps } from 'next';
 
 export type Clip = {
   id: string;
@@ -31,6 +32,13 @@ declare global {
   }
 }
 
+type GetClipsApiRes = {
+  data: Clip[];
+  pagination?: {
+    cursors: string;
+  };
+};
+
 const Bingo = ({ clips = [] }: PropTypes) => {
   const [twitchLivePlayerId] = useLiveTwitchPlayer('live-twitch-player');
 
@@ -56,30 +64,32 @@ const Bingo = ({ clips = [] }: PropTypes) => {
   );
 };
 
-export async function getStaticProps() {
-  try {
-    const props = { clips: [] };
-    const authRes = await getAuth();
-    if (authRes.status === 'success') {
-      //   const param = `search/channels?query=roarcoders`;
-      const param = `clips?broadcaster_id=558724655`;
+export const getStaticProps: GetStaticProps<PropTypes> | any = async () => {
+  const authRes = await getAuth();
+  if (authRes.status === 'success') {
+    //   const param = `search/channels?query=roarcoders`;
+    const param = `clips?broadcaster_id=${process.env.TWITCH_BROADCASTER_ID}&first=100`;
 
-      const getData = await fetch(`https://api.twitch.tv/helix/${param}`, {
-        headers: {
-          Authorization: `Bearer ${authRes.access_token}`,
-          'Client-Id': process.env.TWITCH_CLIENT_ID || '',
-        },
-      });
-      const clips = await getData.json();
-      props.clips = clips.data;
-      return {
-        props,
-      };
-    }
-    if (authRes.status === 'fail') return { props };
-  } catch (error) {
-    console.log(error);
+    const getClips = await fetch(`https://api.twitch.tv/helix/${param}`, {
+      headers: {
+        Authorization: `Bearer ${authRes.access_token}`,
+        'Client-Id': process.env.TWITCH_CLIENT_ID || '',
+      },
+    });
+    const res: GetClipsApiRes = await getClips.json();
+
+    return {
+      props: {
+        clips: res.data,
+      },
+    };
   }
-}
+  if (authRes.status === 'fail')
+    return {
+      redirect: {
+        destination: '/',
+      },
+    };
+};
 
 export default Bingo;
