@@ -10,6 +10,10 @@ type AuthResponseType = {
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse<AuthResponseType>) => {
+  if (req.method) {
+    res.status(301).redirect('/');
+    return;
+  }
   const data = await getAuth();
   if (data.status === 'success') res.status(200).json(data);
   if (data.status === 'fail') res.status(400).json(data);
