@@ -17,7 +17,7 @@ const TwitchClipContainer = ({ clip }: PropTypes) => {
   };
   if (!clip) return null;
   return (
-    <div>
+    <div style={{ cursor: 'pointer' }}>
       {!state && (
         <Image
           src={clip.thumbnail_url}
