@@ -40,7 +40,7 @@ const Home: NextPage = ({ records }: any) => {
 export async function getStaticProps() {
   // Call an external API endpoint to get posts.
   // You can use any data fetching library
-  const response = await fetch(`${process.env.AIRTABLE_API_URL}`, {
+  const response = await fetch(`${process.env.AIRTABLE_API_URL}${process.env.AIRTABLE_PHOTOS}`, {
     method: 'GET',
     headers: {
       Authorization: `${process.env.AIRTABLE_API_KEY}`,
