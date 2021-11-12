@@ -11,7 +11,8 @@ type AuthResponseType = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse<AuthResponseType>) => {
   if (req.method) {
-    res.status(301).redirect('/');
+    // res.redirect(301, '/bingo');
+    res.redirect(301, '/404');
     return;
   }
   const data = await getAuth();
