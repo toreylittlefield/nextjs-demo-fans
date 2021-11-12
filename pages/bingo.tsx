@@ -58,6 +58,7 @@ const Bingo = ({ clips = [] }: PropTypes) => {
 
 export async function getStaticProps() {
   try {
+    const props = { clips: [] };
     const authRes = await getAuth();
     if (authRes.status === 'success') {
       //   const param = `search/channels?query=roarcoders`;
@@ -70,13 +71,12 @@ export async function getStaticProps() {
         },
       });
       const clips = await getData.json();
-
+      props.clips = clips.data;
       return {
-        props: {
-          clips: clips.data,
-        },
+        props,
       };
     }
+    if (authRes.status === 'fail') return { props };
   } catch (error) {
     console.log(error);
   }
