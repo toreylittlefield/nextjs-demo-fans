@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 
-interface AirtableApiTypes {
+export interface AirtableApiTypes {
   records: Record[];
 }
 
@@ -85,33 +85,9 @@ export async function getStaticProps() {
     },
   });
   const res: AirtableApiTypes = await response.json();
-  // By returning { props: { posts } }, the Blog component
-  // will receive `posts` as a prop at build time
   return {
     props: {
       records: res.records,
     },
   };
-}
-interface RootObject {
-  records: Record[];
-}
-
-interface Record {
-  id: string;
-  fields: Fields;
-  createdTime: string;
-}
-
-interface Fields {
-  id?: string;
-  Attachments?: Attachment[];
-}
-
-interface Attachment {
-  id: string;
-  url: string;
-  filename: string;
-  size: number;
-  type: string;
 }

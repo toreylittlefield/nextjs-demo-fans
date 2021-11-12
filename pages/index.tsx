@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
+import { AirtableApiTypes } from './404';
 
 const Home: NextPage = ({ records }: any) => {
   return (
@@ -15,7 +16,6 @@ const Home: NextPage = ({ records }: any) => {
       <main className={styles.main}>
         {records?.map((row: any) => (
           <div key={row.id}>
-            <p>{row.fields.Photos[0].url}</p>
             <Image layout="fill" alt="zainus" src={row.fields.Photos[0].url} />
           </div>
         ))}
@@ -38,22 +38,17 @@ const Home: NextPage = ({ records }: any) => {
 };
 
 export async function getStaticProps() {
-  // Call an external API endpoint to get posts.
-  // You can use any data fetching library
   const response = await fetch(`${process.env.AIRTABLE_API_URL}${process.env.AIRTABLE_PHOTOS}`, {
     method: 'GET',
     headers: {
       Authorization: `${process.env.AIRTABLE_API_KEY}`,
     },
   });
-  const { records } = await response.json();
-  console.log(records);
+  const res: AirtableApiTypes = await response.json();
 
-  // By returning { props: { posts } }, the Blog component
-  // will receive `posts` as a prop at build time
   return {
     props: {
-      records,
+      records: res.records,
     },
   };
 }
