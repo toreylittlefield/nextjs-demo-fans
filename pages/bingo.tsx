@@ -35,7 +35,7 @@ declare global {
 type GetClipsApiRes = {
   data: Clip[];
   pagination?: {
-    cursors: string;
+    cursor: string;
   };
 };
 
@@ -59,7 +59,6 @@ const Bingo = ({ clips = [] }: PropTypes) => {
           <TwitchClipContainer key={clip.id} clip={clip} />
         ))}
       </div>
-      <div>{JSON.stringify(clips, null, 2)}</div>
     </div>
   );
 };
@@ -68,19 +67,38 @@ export const getStaticProps: GetStaticProps<PropTypes> | any = async () => {
   const authRes = await getAuth();
   if (authRes.status === 'success') {
     //   const param = `search/channels?query=roarcoders`;
+    let clips: GetClipsApiRes = { data: [], pagination: { cursor: '' } };
     const param = `clips?broadcaster_id=${process.env.TWITCH_BROADCASTER_ID}&first=100`;
 
-    const getClips = await fetch(`https://api.twitch.tv/helix/${param}`, {
-      headers: {
-        Authorization: `Bearer ${authRes.access_token}`,
-        'Client-Id': process.env.TWITCH_CLIENT_ID || '',
-      },
-    });
-    const res: GetClipsApiRes = await getClips.json();
+    const getClipsFromTwitch = async (param: string) => {
+      const getClips = await fetch(`https://api.twitch.tv/helix/${param}`, {
+        headers: {
+          Authorization: `Bearer ${authRes.access_token}`,
+          'Client-Id': process.env.TWITCH_CLIENT_ID || '',
+        },
+      });
+      if (getClips.ok) {
+        const res: GetClipsApiRes = await getClips.json();
+        return res;
+      } else {
+        return { data: [] };
+      }
+    };
+    const getClipsRes = await getClipsFromTwitch(param);
+    clips.data.push(...getClipsRes.data);
+
+    // paginate results for every 100
+    let cursor = getClipsRes.pagination?.cursor;
+    while (cursor) {
+      const paginateParam = param + `&after=${cursor}`;
+      const res = await getClipsFromTwitch(paginateParam);
+      clips.data.push(...res.data);
+      cursor = res.pagination?.cursor;
+    }
 
     return {
       props: {
-        clips: res.data,
+        clips: clips.data,
       },
     };
   }
